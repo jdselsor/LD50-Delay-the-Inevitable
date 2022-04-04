@@ -34,8 +34,11 @@ void add_render_box_component (Entity *e, Color color);
 
 void free_entity (Entity *e);
 
+// Predefinied Entities
+
 // Component Logic
 void render_box (Entity *e);
 bool check_collision (Entity *e1, Entity *e2);
+void apply_gravity (Entity *e);
 
 #endif

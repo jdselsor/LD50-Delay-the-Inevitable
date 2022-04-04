@@ -45,6 +45,14 @@ void render_box (Entity *e) {
 }
 
 bool check_collision (Entity *e1, Entity *e2) {
+    if (!e1->components.transformComponent || !e1->components.physicsComponent) {
+        return false;
+    }
+
+    if (!e2->components.transformComponent || !e2->components.physicsComponent) {
+        return false;
+    }
+
     if (e1->components.transformComponent->position.x < e2->components.transformComponent->position.x + e2->components.transformComponent->dimensions.y 
         && e1->components.transformComponent->position.x + e1->components.transformComponent->dimensions.x > e2->components.transformComponent->position.x
         && e1->components.transformComponent->position.y < e2->components.transformComponent->dimensions.y + e2->components.transformComponent->dimensions.y
@@ -52,4 +60,12 @@ bool check_collision (Entity *e1, Entity *e2) {
             return true;
     }
     return false;
+}
+
+void apply_gravity (Entity *e) {
+    if (!e->components.transformComponent || !e->components.physicsComponent) {
+        return;
+    }
+
+    e->components.transformComponent->position.y -= e->components.physicsComponent->gravity;
 }
