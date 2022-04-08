@@ -10,36 +10,57 @@ typedef struct {
     Texture2D texture;
 } Player;
 
+void init ();
+void update ();
+void render ();
+void clean_up ();
+
 void draw_player(Player* player);
 void update_player (Player* player);
 
-int main () {
-    InitWindow (SCREEN_WIDTH, SCREEN_HEIGHT, "LD50 Game");
-    SetTargetFPS (60);
+Player player;
 
-    Player player;
-    player.texture = LoadTexture("res/kenny_simplespace/ship_b.png");
-    player.position = (Vector2) { SCREEN_WIDTH / 2 - player.texture.width / 2, SCREEN_HEIGHT / 2 - player.texture.height / 2};
-    player.velocity = (Vector2) { 0, 1.0 };
+int main () {
+    init();
 
     while (!WindowShouldClose()) {
 
-        update_player(&player);
-
-        BeginDrawing();
-
-        ClearBackground(BLACK);
-
-        draw_player(&player);
-
-        EndDrawing();
+        update();
+        render();
     }
 
+    clean_up();
+
+    return 0;
+}
+
+void init () {
+    InitWindow (SCREEN_WIDTH, SCREEN_HEIGHT, "LD50 Game");
+    SetTargetFPS (60);
+
+    player.texture = LoadTexture("res/kenny_simplespace/ship_b.png");
+    player.position = (Vector2) { SCREEN_WIDTH / 2 - player.texture.width / 2, SCREEN_HEIGHT / 2 - player.texture.height / 2};
+    player.velocity = (Vector2) { 0, 1.0 };
+}
+
+void update () {
+    update_player(&player);
+}
+
+void render () {
+    BeginDrawing();
+
+    ClearBackground(BLACK);
+
+    draw_player(&player);
+
+    EndDrawing();
+}
+
+void clean_up () {
     UnloadTexture (player.texture);
 
     CloseWindow();
-
-    return 0;
 }
 
 void draw_player (Player* player) {
