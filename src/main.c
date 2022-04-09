@@ -6,6 +6,12 @@
 
 #define GLSL_VERSION 330
 
+// TODO: merge player and planet struct into some entity structure. Maybe try
+//       to remplement and ecs.
+//
+// TODO: Add some sort of DEBUG infomation. Could be useful to lean some sort
+//       of compile instruction to toggle a DEBUG definition. Also could
+//       change the makefile.
 typedef struct {
     Texture2D texture;
 
@@ -62,10 +68,12 @@ int main () {
     return 0;
 }
 
+// TODO: clean up
 void init () {
     InitWindow (SCREEN_WIDTH, SCREEN_HEIGHT, "LD50 Game");
     SetTargetFPS (60);
 
+    // creates star bg.
     target = LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
 
     shader = LoadShader(0, TextFormat("res/shaders/star.fs", GLSL_VERSION));
@@ -75,16 +83,19 @@ void init () {
     float rng_time[1] = { (float) GetFrameTime() };
     SetShaderValue(shader, GetShaderLocation(shader, "iTime"), &rng_time, SHADER_UNIFORM_FLOAT);
 
+    // loads texture assets
     player.texture = LoadTexture("res/kenny_simplespace/ship_b.png");
+    planet.texture = LoadTexture("res/planets/planet1.png");
 
+    // defines player
     player.position = (Vector2) { SCREEN_WIDTH / 2 - player.texture.width / 2, SCREEN_HEIGHT / 2 - player.texture.height / 2};
     player.velocity = (Vector2) { 0, 0 };
 
     player.roation = 0.0f;
     player.rotationVelocity = 0.0f;
 
+    // defines planet
     // This feels wrong, but it works.
-    planet.texture = LoadTexture("res/planets/planet1.png");
     planet.texture.width *= 2;
     planet.texture.height *= 2;
     planet.radius = 98;
@@ -125,12 +136,14 @@ void update () {
 }
 
 void render () {
+    // TODO: see if I could move this into init. This seems like somthing that
+    //       does not need to be run on each render call.
     BeginTextureMode(target);
 
         ClearBackground(BLACK);
         DrawRectangle (0, 0, GetScreenWidth(), GetScreenHeight(), BLACK);
 
-        EndTextureMode ();
+    EndTextureMode ();
 
     BeginDrawing();
 
