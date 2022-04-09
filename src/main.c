@@ -72,6 +72,9 @@ void init () {
     float screenSize[2] = { (float) GetScreenWidth(), (float) GetScreenHeight() };
     SetShaderValue(shader, GetShaderLocation(shader, "iResolution"), &screenSize, SHADER_UNIFORM_VEC3);
 
+    float rng_time[1] = { (float) GetFrameTime() };
+    SetShaderValue(shader, GetShaderLocation(shader, "iTime"), &rng_time, SHADER_UNIFORM_FLOAT);
+
     player.texture = LoadTexture("res/kenny_simplespace/ship_b.png");
 
     player.position = (Vector2) { SCREEN_WIDTH / 2 - player.texture.width / 2, SCREEN_HEIGHT / 2 - player.texture.height / 2};
@@ -81,9 +84,10 @@ void init () {
     player.rotationVelocity = 0.0f;
 
     // This feels wrong, but it works.
-    planet.texture = LoadTexture("res/planets/planet01.png");
+    planet.texture = LoadTexture("res/planets/planet1.png");
     planet.texture.width *= 2;
     planet.texture.height *= 2;
+    planet.radius = 98;
 
     planet.frameWidth = (float)(planet.texture.width / 15);
     planet.frameHeight = (float) (planet.texture.height / 15);
@@ -160,8 +164,6 @@ void clean_up () {
 }
 
 void render_player (Player* player) {
-    DrawCircleLines (player->position.x, player->position.y, 13, GREEN);
-
     DrawTexturePro (
         player->texture,
         (Rectangle) { 0, 0, player->texture.width, player->texture.height },
@@ -169,6 +171,13 @@ void render_player (Player* player) {
         (Vector2) { player->texture.width / 2, player->texture.height / 2 },
         player->roation,
         WHITE
+    );
+
+    DrawCircleLines (
+        player->position.x, 
+        player->position.y, 
+        13, 
+        GREEN
     );
 }
 
@@ -199,10 +208,18 @@ void update_planet (Planet* planet) {
 }
 
 void render_planet (Planet* planet) {
+
     DrawTextureRec (
         planet->texture, 
         planet->frameRec, 
-        (Vector2) { SCREEN_WIDTH / 2 - planet->frameRec.height / 2, SCREEN_HEIGHT / 2 - planet->frameRec.height / 2 }, 
+        (Vector2) { SCREEN_WIDTH / 2 - planet->frameRec.width / 2, SCREEN_HEIGHT / 2 - planet->frameRec.height / 2 }, 
         WHITE
+    );
+
+    DrawCircleLines (
+        SCREEN_WIDTH / 2,
+        SCREEN_HEIGHT / 2, 
+        planet->radius, 
+        GREEN
     );
 };
