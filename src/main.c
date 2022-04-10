@@ -113,26 +113,32 @@ void init () {
 }
 
 void poll_input () {
-    // if (IsKeyDown(KEY_D)) {
-    //     player.rotationVelocity = 5;
-    // }
-    // if (IsKeyDown(KEY_A)) {
-    //     player.rotationVelocity = -5;
-    // }
-    // if (IsKeyDown(KEY_W)) {
-    //     player.velocity = (Vector2) { 5 * sin(player.roation * DEG2RAD), -5 * cos (player.roation * DEG2RAD) };
-    // }
+    if (IsKeyDown(KEY_D)) {
+        kinimatic_component_set_angluar_velocity (&player, 5);
+    }
+    if (IsKeyDown(KEY_A)) {
+        kinimatic_component_set_angluar_velocity (&player, -5);
+    }
+    if (IsKeyDown(KEY_W)) {
+        kinimatic_component_set_velocity (
+            &player, 
+            (Vector2) { 
+                5 * sin(kinimatic_component_get_angle(&player) * DEG2RAD), 
+                -5 * cos (kinimatic_component_get_angle(&player) * DEG2RAD) 
+            }
+        );
+    }
 
-    // if (IsKeyReleased(KEY_D)) {
-    //     player.rotationVelocity = 0;
-    // }
-    // if (IsKeyReleased(KEY_A)) {
-    //     player.rotationVelocity = 0;
-    // }
+    if (IsKeyReleased(KEY_D)) {
+        kinimatic_component_set_angluar_velocity(&player, 0);
+    }
+    if (IsKeyReleased(KEY_A)) {
+        kinimatic_component_set_angluar_velocity(&player, 0);
+    }
 
-    // if (IsKeyReleased (KEY_W)) {
-    //     player.velocity = (Vector2) { 0, 0 };
-    // }
+    if (IsKeyReleased (KEY_W)) {
+        kinimatic_component_set_velocity (&player, (Vector2) { 0, 0 });
+    }
 }
 
 void update () {
@@ -140,6 +146,7 @@ void update () {
 
     update_planet(&planet);
     //update_player(&player);
+    kinimatic_component_update(&player);
 }
 
 void render () {

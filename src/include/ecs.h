@@ -2,41 +2,14 @@
 #define ECS_H
 
 #include "raylib/raylib.h"
-
-// typedef struct {
-//     Vector2 position;
-//     Vector2 scale;
-//     float rotation;
-// } TransformComponent;
-
-// typedef struct {
-//     Vector2 size;
-//     Color color;
-// } RenderRectangleComponent;
-
-// typedef struct {
-//     TransformComponent *transformComponent;
-//     RenderRectangleComponent *renderRectangleComponent;
-// } Components;
-
-// typedef struct {
-//     unsigned int uuid;
-//     Components components;
-// } Entity;
-
-enum {
-    KINIMATIC_COMPONENT_ID = 1,
-    TEXTURE_RENDERER_COMPONENT_ID = 2
-};
+#include "raylib/raymath.h"
 
 typedef struct {
     Vector2 position;
     Vector2 velocity;
-    Vector2 acceration;
 
     float angle;
     float angluarVelocity;
-    float angularAcceration;
 } KinimaticComponent;
 
 typedef struct {
@@ -61,5 +34,11 @@ void add_texture_renderer_component (Entity* entity, char* pathToTexture, Color 
 void free_entity (Entity* entity);
 
 void texture_renderer_component_render (Entity* entity);
+
+void kinimatic_component_update (Entity* entity);
+void kinimatic_component_set_velocity (Entity* entity, Vector2 velocity);
+void kinimatic_component_set_angluar_velocity (Entity* entity, float angluar_velocity);
+Vector2 kinimatic_component_get_velocity (Entity* entity);
+float kinimatic_component_get_angle (Entity* entity);
 
 #endif
