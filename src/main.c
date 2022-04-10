@@ -1,6 +1,8 @@
 #include "raylib/raylib.h"
 #include "raylib/raymath.h"
 
+#include "ecs.h"
+
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 
@@ -12,15 +14,15 @@
 // TODO: Add some sort of DEBUG infomation. Could be useful to lean some sort
 //       of compile instruction to toggle a DEBUG definition. Also could
 //       change the makefile.
-typedef struct {
-    Texture2D texture;
+// typedef struct {
+//     Texture2D texture;
 
-    Vector2 position;
-    Vector2 velocity;
+//     Vector2 position;
+//     Vector2 velocity;
 
-    float roation;
-    float rotationVelocity;
-} Player;
+//     float roation;
+//     float rotationVelocity;
+// } Player;
 
 typedef struct {
     Texture2D texture;
@@ -42,9 +44,6 @@ void update ();
 void render ();
 void clean_up ();
 
-void render_player(Player* player);
-void update_player (Player* player);
-
 void update_planet (Planet* planet);
 void render_planet (Planet* planet);
 
@@ -52,8 +51,9 @@ RenderTexture2D target;
 
 Shader shader;
 
-Player player;
+//Player player;
 Planet planet;
+Entity player;
 
 int main () {
     init();
@@ -84,15 +84,22 @@ void init () {
     SetShaderValue(shader, GetShaderLocation(shader, "iTime"), &rng_time, SHADER_UNIFORM_FLOAT);
 
     // loads texture assets
-    player.texture = LoadTexture("res/kenny_simplespace/ship_b.png");
     planet.texture = LoadTexture("res/planets/planet1.png");
 
-    // defines player
-    player.position = (Vector2) { SCREEN_WIDTH / 2 - player.texture.width / 2, SCREEN_HEIGHT / 2 - player.texture.height / 2};
-    player.velocity = (Vector2) { 0, 0 };
+    add_kinimatic_component (
+        &player, 
+        (Vector2) { 
+            SCREEN_WIDTH / 2 - 16, 
+            SCREEN_HEIGHT / 2 - 16
+        },
+        0.0f
+    );
 
-    player.roation = 0.0f;
-    player.rotationVelocity = 0.0f;
+    add_texture_renderer_component (
+        &player,
+        "res/kenny_simplespace/ship_b.png",
+        WHITE
+    );
 
     // defines planet
     // This feels wrong, but it works.
@@ -106,33 +113,33 @@ void init () {
 }
 
 void poll_input () {
-    if (IsKeyDown(KEY_D)) {
-        player.rotationVelocity = 5;
-    }
-    if (IsKeyDown(KEY_A)) {
-        player.rotationVelocity = -5;
-    }
-    if (IsKeyDown(KEY_W)) {
-        player.velocity = (Vector2) { 5 * sin(player.roation * DEG2RAD), -5 * cos (player.roation * DEG2RAD) };
-    }
+    // if (IsKeyDown(KEY_D)) {
+    //     player.rotationVelocity = 5;
+    // }
+    // if (IsKeyDown(KEY_A)) {
+    //     player.rotationVelocity = -5;
+    // }
+    // if (IsKeyDown(KEY_W)) {
+    //     player.velocity = (Vector2) { 5 * sin(player.roation * DEG2RAD), -5 * cos (player.roation * DEG2RAD) };
+    // }
 
-    if (IsKeyReleased(KEY_D)) {
-        player.rotationVelocity = 0;
-    }
-    if (IsKeyReleased(KEY_A)) {
-        player.rotationVelocity = 0;
-    }
+    // if (IsKeyReleased(KEY_D)) {
+    //     player.rotationVelocity = 0;
+    // }
+    // if (IsKeyReleased(KEY_A)) {
+    //     player.rotationVelocity = 0;
+    // }
 
-    if (IsKeyReleased (KEY_W)) {
-        player.velocity = (Vector2) { 0, 0 };
-    }
+    // if (IsKeyReleased (KEY_W)) {
+    //     player.velocity = (Vector2) { 0, 0 };
+    // }
 }
 
 void update () {
     poll_input ();
 
     update_planet(&planet);
-    update_player(&player);
+    //update_player(&player);
 }
 
 void render () {
@@ -140,14 +147,14 @@ void render () {
     //       does not need to be run on each render call.
     BeginTextureMode(target);
 
-        ClearBackground(BLACK);
+        ClearBackground((Color) { 17, 17, 17 });
         DrawRectangle (0, 0, GetScreenWidth(), GetScreenHeight(), BLACK);
 
     EndTextureMode ();
 
     BeginDrawing();
 
-        ClearBackground(BLACK);
+        ClearBackground((Color) { 17, 17, 17 });
 
             BeginShaderMode(shader);
 
@@ -161,7 +168,8 @@ void render () {
             EndShaderMode();
 
         render_planet(&planet);
-        render_player(&player);
+
+        texture_renderer_component_render (&player);
 
     EndDrawing();
 }
@@ -170,33 +178,12 @@ void clean_up () {
     UnloadShader(shader);
 
     UnloadRenderTexture (target);
-    UnloadTexture (player.texture);
+
+    free_entity(&player);
+
     UnloadTexture (planet.texture);
 
     CloseWindow();
-}
-
-void render_player (Player* player) {
-    DrawTexturePro (
-        player->texture,
-        (Rectangle) { 0, 0, player->texture.width, player->texture.height },
-        (Rectangle) { player->position.x, player->position.y, player->texture.width, player->texture.height },
-        (Vector2) { player->texture.width / 2, player->texture.height / 2 },
-        player->roation,
-        WHITE
-    );
-
-    DrawCircleLines (
-        player->position.x, 
-        player->position.y, 
-        13, 
-        GREEN
-    );
-}
-
-void update_player (Player* player) {
-    player->position = Vector2Add(player->position, player->velocity);
-    player->roation = player->roation + player->rotationVelocity;
 }
 
 void update_planet (Planet* planet) {
