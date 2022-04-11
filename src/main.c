@@ -14,29 +14,6 @@
 // TODO: Add some sort of DEBUG infomation. Could be useful to lean some sort
 //       of compile instruction to toggle a DEBUG definition. Also could
 //       change the makefile.
-// typedef struct {
-//     Texture2D texture;
-
-//     Vector2 position;
-//     Vector2 velocity;
-
-//     float roation;
-//     float rotationVelocity;
-// } Player;
-
-typedef struct {
-    Texture2D texture;
-
-    float frameWidth;
-    float frameHeight;
-    Rectangle frameRec;
-
-    int frameCounter;
-    int currentFrame;
-    int currentLine;
-
-    float radius;
-} Planet;
 
 void init ();
 void poll_input ();
@@ -44,16 +21,14 @@ void update ();
 void render ();
 void clean_up ();
 
-void update_planet (Planet* planet);
-void render_planet (Planet* planet);
-
 RenderTexture2D target;
 
 Shader shader;
 
 //Player player;
-Planet planet;
+//Planet planet;
 Entity player;
+Entity planet;
 
 int main () {
     init();
@@ -83,8 +58,6 @@ void init () {
     float rng_time[1] = { (float) GetFrameTime() };
     SetShaderValue(shader, GetShaderLocation(shader, "iTime"), &rng_time, SHADER_UNIFORM_FLOAT);
 
-    // loads texture assets
-    planet.texture = LoadTexture("res/planets/planet1.png");
 
     add_kinimatic_component (
         &player, 
@@ -95,21 +68,30 @@ void init () {
         0.0f
     );
 
-    add_texture_renderer_component (
+    add_sprite_component (
         &player,
         "res/kenny_simplespace/ship_b.png",
         WHITE
     );
 
-    // defines planet
-    // This feels wrong, but it works.
-    planet.texture.width *= 2;
-    planet.texture.height *= 2;
-    planet.radius = 98;
+    add_kinimatic_component (
+        &planet,
+        (Vector2) {
+            SCREEN_WIDTH / 2 - 100, 
+            SCREEN_HEIGHT / 2 - 100
+        },
+        0.0f
+    );
 
-    planet.frameWidth = (float)(planet.texture.width / 15);
-    planet.frameHeight = (float) (planet.texture.height / 15);
-    planet.frameRec = (Rectangle) { 0, 0, planet.frameWidth, planet.frameHeight };
+    Texture2D planetTexture = LoadTexture("res/planets/planet1.png");
+    planetTexture.width *= 2;
+    planetTexture.height *= 2;
+
+    add_animated_sprite_component_with_texture (
+        &planet,
+        planetTexture,
+        WHITE  
+    );
 }
 
 void poll_input () {
@@ -144,9 +126,10 @@ void poll_input () {
 void update () {
     poll_input ();
 
-    update_planet(&planet);
-    //update_player(&player);
     kinimatic_component_update(&player);
+    kinimatic_component_update(&planet);
+
+    animated_sprite_component_update(&planet);
 }
 
 void render () {
@@ -174,9 +157,8 @@ void render () {
             
             EndShaderMode();
 
-        render_planet(&planet);
-
-        texture_renderer_component_render (&player);
+        animated_sprite_component_render (&planet);
+        sprite_component_render (&player);
 
     EndDrawing();
 }
@@ -187,46 +169,7 @@ void clean_up () {
     UnloadRenderTexture (target);
 
     free_entity(&player);
-
-    UnloadTexture (planet.texture);
+    free_entity(&planet);
 
     CloseWindow();
 }
-
-void update_planet (Planet* planet) {
-    planet->frameCounter++;
-    if (planet->frameCounter > 2) {
-        planet->currentFrame ++;
-
-        if (planet->currentFrame >= 15) {
-            planet->currentFrame = 0;
-            planet->currentLine++;
-
-            if (planet->currentLine >= 15) {
-                planet->currentLine = 0;
-            }
-        }
-
-        planet->frameCounter = 0;
-    }
-
-    planet->frameRec.x = planet->frameWidth * planet->currentFrame;
-    planet->frameRec.y = planet->frameHeight * planet->currentLine;
-}
-
-void render_planet (Planet* planet) {
-
-    DrawTextureRec (
-        planet->texture, 
-        planet->frameRec, 
-        (Vector2) { SCREEN_WIDTH / 2 - planet->frameRec.width / 2, SCREEN_HEIGHT / 2 - planet->frameRec.height / 2 }, 
-        WHITE
-    );
-
-    DrawCircleLines (
-        SCREEN_WIDTH / 2,
-        SCREEN_HEIGHT / 2, 
-        planet->radius, 
-        GREEN
-    );
-};
