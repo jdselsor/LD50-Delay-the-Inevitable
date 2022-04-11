@@ -20,6 +20,9 @@ typedef struct {
 typedef struct {
     Texture2D textureSheet;
 
+    int frameCountX;
+    int frameCountY;
+
     float frameWidth;
     float frameHeight;
 
@@ -39,15 +42,15 @@ typedef struct {
 } Components;
 
 typedef struct {
-    unsigned int uuid;
+    unsigned int id;
 
     Components components;
 } Entity;
 
 void add_kinimatic_component (Entity* entity, Vector2 position, float angle);
 void add_sprite_component (Entity* entity, char* pathToTexture, Color tint);
-void add_animated_sprite_component (Entity* entity, char* pathToTexture, Color tint);
-void add_animated_sprite_component_with_texture (Entity* entity, Texture2D textureSheet, Color tint);
+void add_animated_sprite_component (Entity* entity, char* pathToTexture, int frameCountX, int frameCountY, Color tint);
+void add_animated_sprite_component_with_texture (Entity* entity, Texture2D textureSheet, int frameCountX, int frameCountY, Color tint);
 
 void free_entity (Entity* entity);
 

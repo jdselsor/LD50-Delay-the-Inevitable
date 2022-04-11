@@ -20,33 +20,37 @@ void add_sprite_component (Entity* entity, char* pathToTexture, Color tint) {
     entity->components.spriteComponent->tint = tint;
 }
 
-void add_animated_sprite_component (Entity* entity, char* pathToTexture, Color tint) {
+void add_animated_sprite_component (Entity* entity, char* pathToTexture, int frameCountWidth, int frameCoutnHeight, Color tint) {
     entity->components.animatedSpriteComponent = malloc(sizeof(AnimatedSpriteComponent));
 
     entity->components.animatedSpriteComponent->textureSheet = LoadTexture(pathToTexture);
+    entity->components.animatedSpriteComponent->frameCountX = frameCountWidth;
+    entity->components.animatedSpriteComponent->frameCountY = frameCoutnHeight;
     
-    entity->components.animatedSpriteComponent->frameWidth = (float)(entity->components.animatedSpriteComponent->textureSheet.width / 15);
-    entity->components.animatedSpriteComponent->frameHeight = (float)(entity->components.animatedSpriteComponent->textureSheet.height / 15);
+    entity->components.animatedSpriteComponent->frameWidth = (float)(entity->components.animatedSpriteComponent->textureSheet.width / entity->components.animatedSpriteComponent->frameCountX);
+    entity->components.animatedSpriteComponent->frameHeight = (float)(entity->components.animatedSpriteComponent->textureSheet.height / entity->components.animatedSpriteComponent->frameCountY);
 
     entity->components.animatedSpriteComponent->frameRec = (Rectangle) { 
-        0, 
-        0, 
+        0.0f, 
+        0.0f, 
         entity->components.animatedSpriteComponent->frameWidth, 
         entity->components.animatedSpriteComponent->frameHeight 
     };
 }
 
-void add_animated_sprite_component_with_texture (Entity* entity, Texture2D textureSheet, Color tint) {
+void add_animated_sprite_component_with_texture (Entity* entity, Texture2D textureSheet, int frameCountWidth, int frameCoutnHeight, Color tint) {
     entity->components.animatedSpriteComponent = malloc(sizeof(AnimatedSpriteComponent));
 
     entity->components.animatedSpriteComponent->textureSheet = textureSheet;
+    entity->components.animatedSpriteComponent->frameCountX = frameCountWidth;
+    entity->components.animatedSpriteComponent->frameCountY = frameCoutnHeight;
 
-    entity->components.animatedSpriteComponent->frameWidth = (float)(entity->components.animatedSpriteComponent->textureSheet.width / 15);
-    entity->components.animatedSpriteComponent->frameHeight = (float)(entity->components.animatedSpriteComponent->textureSheet.height / 15);
+    entity->components.animatedSpriteComponent->frameWidth = (float)(entity->components.animatedSpriteComponent->textureSheet.width / entity->components.animatedSpriteComponent->frameCountX);
+    entity->components.animatedSpriteComponent->frameHeight = (float)(entity->components.animatedSpriteComponent->textureSheet.height / entity->components.animatedSpriteComponent->frameCountY);
 
     entity->components.animatedSpriteComponent->frameRec = (Rectangle) { 
-        0, 
-        0, 
+        0.0f, 
+        0.0f, 
         entity->components.animatedSpriteComponent->frameWidth, 
         entity->components.animatedSpriteComponent->frameHeight 
     };
@@ -156,12 +160,12 @@ void animated_sprite_component_update (Entity* entity) {
         entity->components.animatedSpriteComponent->currentFrame ++;
 
         // TODO: add number frames and number lines to struct.
-        if (entity->components.animatedSpriteComponent->currentFrame >= 15) {
+        if (entity->components.animatedSpriteComponent->currentFrame >= entity->components.animatedSpriteComponent->frameCountX) {
             entity->components.animatedSpriteComponent->currentFrame = 0;
             entity->components.animatedSpriteComponent->currentLine ++;
             
             // TODO: add number frames and number lines to struct.
-            if (entity->components.animatedSpriteComponent->currentLine >= 15) {
+            if (entity->components.animatedSpriteComponent->currentLine >= entity->components.animatedSpriteComponent->frameCountY) {
                 entity->components.animatedSpriteComponent->currentFrame = 0;
             }
         }

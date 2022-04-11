@@ -70,6 +70,7 @@
 		"fstream": "cpp",
 		"iomanip": "cpp",
 		"valarray": "cpp",
-		"*.m": "c"
+		"*.m": "c",
+		"raylib.h": "c"
 	}
 }

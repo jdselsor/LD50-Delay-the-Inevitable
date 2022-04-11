@@ -90,6 +90,8 @@ void init () {
     add_animated_sprite_component_with_texture (
         &planet,
         planetTexture,
+        15,
+        15,
         WHITE  
     );
 }
